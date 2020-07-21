@@ -9,7 +9,6 @@
     "build": "rollup -c",
     "dev": "rollup -cw",
     "lint": "standard --fix rollup.config.js src/**",
-    "prepare": "yarn lint && yarn build",
     "test": "cd test && rollup -c || cd .."
   },
   "keywords": [
