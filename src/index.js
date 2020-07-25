@@ -12,7 +12,7 @@ let server
  * Serve your rolled up bundle like webpack-dev-server
  * @param {ServeOptions|string|string[]} options
  */
-function serve (options = { contentBase: '' }) {
+const serve = (options = { contentBase: '' }) => {
   if (Array.isArray(options) || typeof options === 'string') {
     options = { contentBase: options }
   }
@@ -31,7 +31,7 @@ function serve (options = { contentBase: '' }) {
       response.setHeader(key, options.headers[key])
     })
 
-    readFileFromContentBase(options.contentBase, urlPath, function (error, content, filePath) {
+    readFileFromContentBase(options.contentBase, urlPath, (error, content, filePath) => {
       if (!error) {
         return found(response, filePath, content)
       }
@@ -45,7 +45,7 @@ function serve (options = { contentBase: '' }) {
       }
       if (options.historyApiFallback) {
         const fallbackPath = typeof options.historyApiFallback === 'string' ? options.historyApiFallback : '/index.html'
-        readFileFromContentBase(options.contentBase, fallbackPath, function (error, content, filePath) {
+        readFileFromContentBase(options.contentBase, fallbackPath, (error, content, filePath) => {
           if (error) {
             notFound(response, filePath)
           } else {
@@ -90,7 +90,7 @@ function serve (options = { contentBase: '' }) {
 
   return {
     name: 'serve',
-    generateBundle () {
+    generateBundle() {
       if (!running) {
         running = true
 
@@ -112,7 +112,7 @@ function serve (options = { contentBase: '' }) {
   }
 }
 
-function readFileFromContentBase (contentBase, urlPath, callback) {
+const readFileFromContentBase = (contentBase, urlPath, callback) => {
   let filePath = resolve(contentBase[0] || '.', '.' + urlPath)
 
   // Load index.html in directories
@@ -135,14 +135,14 @@ function readFileFromContentBase (contentBase, urlPath, callback) {
   })
 }
 
-function notFound (response, filePath) {
+const notFound = (response, filePath) => {
   response.writeHead(404)
   response.end('404 Not Found' +
     '\n\n' + filePath +
     '\n\n(rollup-plugin-serve)', 'utf-8')
 }
 
-function found (response, filePath, content) {
+const found = (response, filePath, content) => {
   const origPath = filePath.endsWith('.gz') ? filePath.slice(0, -3) : filePath
   const headers = {
     'Content-Type': mime.getType(origPath)
@@ -156,11 +156,10 @@ function found (response, filePath, content) {
   response.end(content, 'utf-8')
 }
 
-function green (text) {
-  return '\u001b[1m\u001b[32m' + text + '\u001b[39m\u001b[22m'
-}
+const green = text => '\u001b[1m\u001b[32m' + text + '\u001b[39m\u001b[22m'
 
-function closeServerOnTermination () {
+
+const closeServerOnTermination = () => {
   const terminationSignals = ['SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGHUP']
   terminationSignals.forEach(signal => {
     process.on(signal, () => {
