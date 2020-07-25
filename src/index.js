@@ -31,7 +31,10 @@ export const serve = (options = { contentBase: '' }) => {
       response.setHeader(key, options.headers[key])
     })
 
-    readFileFromContentBase(options.contentBase, urlPath, (error, content, filePath) => {
+    const supportsCompression = request.headers['accept-encoding'].includes('gzip')
+    console.log('comp', supportsCompression)
+
+    readFileFromContentBase(options.contentBase, urlPath, supportsCompression, (error, content, filePath) => {
       if (!error) {
         return found(response, filePath, content)
       }
@@ -45,7 +48,7 @@ export const serve = (options = { contentBase: '' }) => {
       }
       if (options.historyApiFallback) {
         const fallbackPath = typeof options.historyApiFallback === 'string' ? options.historyApiFallback : '/index.html'
-        readFileFromContentBase(options.contentBase, fallbackPath, (error, content, filePath) => {
+        readFileFromContentBase(options.contentBase, fallbackPath, supportsCompression, (error, content, filePath) => {
           if (error) {
             notFound(response, filePath)
           } else {
@@ -90,7 +93,7 @@ export const serve = (options = { contentBase: '' }) => {
 
   return {
     name: 'serve',
-    generateBundle () {
+    generateBundle() {
       if (!running) {
         running = true
 
@@ -112,7 +115,7 @@ export const serve = (options = { contentBase: '' }) => {
   }
 }
 
-const readFileFromContentBase = (contentBase, urlPath, callback) => {
+const readFileFromContentBase = (contentBase, urlPath, supportsCompression, callback) => {
   let filePath = resolve(contentBase[0] || '.', '.' + urlPath)
 
   // Load index.html in directories
@@ -120,14 +123,14 @@ const readFileFromContentBase = (contentBase, urlPath, callback) => {
     filePath = resolve(filePath, 'index.html')
   }
 
-  if (existsSync(filePath + '.gz')) {
+  if (supportsCompression && existsSync(filePath + '.gz')) {
     filePath += '.gz'
   }
 
   readFile(filePath, (error, content) => {
     if (error && contentBase.length > 1) {
       // Try to read from next contentBase
-      readFileFromContentBase(contentBase.slice(1), urlPath, callback)
+      readFileFromContentBase(contentBase.slice(1), urlPath, supportsCompression, callback)
     } else {
       // We know enough
       callback(error, content, filePath)
