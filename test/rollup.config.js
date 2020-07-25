@@ -1,4 +1,4 @@
-import serve from '../src/index.js'
+import { serve } from '../src/index.js'
 
 export default {
   input: 'entry.js',
