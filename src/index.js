@@ -90,7 +90,7 @@ export const serve = (options = { contentBase: '' }) => {
 
   return {
     name: 'serve',
-    generateBundle() {
+    generateBundle () {
       if (!running) {
         running = true
 
@@ -157,7 +157,6 @@ const found = (response, filePath, content) => {
 }
 
 const green = text => '\u001b[1m\u001b[32m' + text + '\u001b[39m\u001b[22m'
-
 
 const closeServerOnTermination = () => {
   const terminationSignals = ['SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGHUP']
