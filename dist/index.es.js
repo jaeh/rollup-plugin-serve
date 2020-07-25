@@ -33,7 +33,6 @@ var serve = function (options) {
     });
 
     var supportsCompression = request.headers['accept-encoding'].includes('gzip');
-    console.log('comp', supportsCompression);
 
     readFileFromContentBase(options.contentBase, urlPath, supportsCompression, function (error, content, filePath) {
       if (!error) {
