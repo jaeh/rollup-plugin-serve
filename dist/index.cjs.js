@@ -38,7 +38,10 @@ var serve = function (options) {
       response.setHeader(key, options.headers[key]);
     });
 
-    readFileFromContentBase(options.contentBase, urlPath, function (error, content, filePath) {
+    var supportsCompression = request.headers['accept-encoding'].includes('gzip');
+    console.log('comp', supportsCompression);
+
+    readFileFromContentBase(options.contentBase, urlPath, supportsCompression, function (error, content, filePath) {
       if (!error) {
         return found(response, filePath, content)
       }
@@ -52,7 +55,7 @@ var serve = function (options) {
       }
       if (options.historyApiFallback) {
         var fallbackPath = typeof options.historyApiFallback === 'string' ? options.historyApiFallback : '/index.html';
-        readFileFromContentBase(options.contentBase, fallbackPath, function (error, content, filePath) {
+        readFileFromContentBase(options.contentBase, fallbackPath, supportsCompression, function (error, content, filePath) {
           if (error) {
             notFound(response, filePath);
           } else {
@@ -97,7 +100,7 @@ var serve = function (options) {
 
   return {
     name: 'serve',
-    generateBundle: function generateBundle () {
+    generateBundle: function generateBundle() {
       if (!running) {
         running = true;
 
@@ -119,7 +122,7 @@ var serve = function (options) {
   }
 };
 
-var readFileFromContentBase = function (contentBase, urlPath, callback) {
+var readFileFromContentBase = function (contentBase, urlPath, supportsCompression, callback) {
   var filePath = path.resolve(contentBase[0] || '.', '.' + urlPath);
 
   // Load index.html in directories
@@ -127,14 +130,14 @@ var readFileFromContentBase = function (contentBase, urlPath, callback) {
     filePath = path.resolve(filePath, 'index.html');
   }
 
-  if (fs.existsSync(filePath + '.gz')) {
+  if (supportsCompression && fs.existsSync(filePath + '.gz')) {
     filePath += '.gz';
   }
 
   fs.readFile(filePath, function (error, content) {
     if (error && contentBase.length > 1) {
       // Try to read from next contentBase
-      readFileFromContentBase(contentBase.slice(1), urlPath, callback);
+      readFileFromContentBase(contentBase.slice(1), urlPath, supportsCompression, callback);
     } else {
       // We know enough
       callback(error, content, filePath);
