@@ -12,7 +12,7 @@ let server
  * Serve your rolled up bundle like webpack-dev-server
  * @param {ServeOptions|string|string[]} options
  */
-const serve = (options = { contentBase: '' }) => {
+export const serve = (options = { contentBase: '' }) => {
   if (Array.isArray(options) || typeof options === 'string') {
     options = { contentBase: options }
   }
@@ -170,8 +170,6 @@ const closeServerOnTermination = () => {
     })
   })
 }
-
-export default serve
 
 /**
  * @typedef {Object} ServeOptions
