@@ -11,7 +11,7 @@ var server;
  * Serve your rolled up bundle like webpack-dev-server
  * @param {ServeOptions|string|string[]} options
  */
-function serve (options) {
+var serve = function (options) {
   if ( options === void 0 ) options = { contentBase: '' };
 
   if (Array.isArray(options) || typeof options === 'string') {
@@ -111,9 +111,9 @@ function serve (options) {
       }
     }
   }
-}
+};
 
-function readFileFromContentBase (contentBase, urlPath, callback) {
+var readFileFromContentBase = function (contentBase, urlPath, callback) {
   var filePath = resolve(contentBase[0] || '.', '.' + urlPath);
 
   // Load index.html in directories
@@ -134,16 +134,16 @@ function readFileFromContentBase (contentBase, urlPath, callback) {
       callback(error, content, filePath);
     }
   });
-}
+};
 
-function notFound (response, filePath) {
+var notFound = function (response, filePath) {
   response.writeHead(404);
   response.end('404 Not Found' +
     '\n\n' + filePath +
     '\n\n(rollup-plugin-serve)', 'utf-8');
-}
+};
 
-function found (response, filePath, content) {
+var found = function (response, filePath, content) {
   var origPath = filePath.endsWith('.gz') ? filePath.slice(0, -3) : filePath;
   var headers = {
     'Content-Type': mime.getType(origPath)
@@ -155,13 +155,11 @@ function found (response, filePath, content) {
 
   response.writeHead(200, headers);
   response.end(content, 'utf-8');
-}
+};
 
-function green (text) {
-  return '\u001b[1m\u001b[32m' + text + '\u001b[39m\u001b[22m'
-}
+var green = function (text) { return '\u001b[1m\u001b[32m' + text + '\u001b[39m\u001b[22m'; };
 
-function closeServerOnTermination () {
+var closeServerOnTermination = function () {
   var terminationSignals = ['SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGHUP'];
   terminationSignals.forEach(function (signal) {
     process.on(signal, function () {
@@ -171,7 +169,7 @@ function closeServerOnTermination () {
       }
     });
   });
-}
+};
 
 /**
  * @typedef {Object} ServeOptions
@@ -194,4 +192,4 @@ function closeServerOnTermination () {
  * @see https.ServerOptions
  */
 
-export default serve;
+export { serve };
