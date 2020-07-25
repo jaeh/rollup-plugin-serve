@@ -32,7 +32,6 @@ export const serve = (options = { contentBase: '' }) => {
     })
 
     const supportsCompression = request.headers['accept-encoding'].includes('gzip')
-    console.log('comp', supportsCompression)
 
     readFileFromContentBase(options.contentBase, urlPath, supportsCompression, (error, content, filePath) => {
       if (!error) {
