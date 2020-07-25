@@ -125,6 +125,10 @@ function readFileFromContentBase (contentBase, urlPath, callback) {
     filePath = path.resolve(filePath, 'index.html');
   }
 
+  if (fs.existsSync(filePath + '.gz')) {
+    filePath += '.gz';
+  }
+
   fs.readFile(filePath, function (error, content) {
     if (error && contentBase.length > 1) {
       // Try to read from next contentBase
@@ -144,7 +148,16 @@ function notFound (response, filePath) {
 }
 
 function found (response, filePath, content) {
-  response.writeHead(200, { 'Content-Type': mime.getType(filePath) });
+  var origPath = filePath.endsWith('.gz') ? filePath.slice(0, -3) : filePath;
+  var headers = {
+    'Content-Type': mime.getType(origPath)
+  };
+
+  if (filePath !== origPath) {
+    headers['Content-Encoding'] = 'gzip';
+  }
+
+  response.writeHead(200, headers);
   response.end(content, 'utf-8');
 }
 
